@@ -47,12 +47,44 @@ if (!fs.existsSync('uploads')) {
   fs.mkdirSync('uploads');
 }
 
-// Endpoint para listar produtos
+/**
+ * @swagger
+ * /produtos:
+ *   get:
+ *     summary: Lista todos os produtos
+ *     responses:
+ *       200:
+ *         description: Lista de produtos
+ */
 app.get('/produtos', (req, res) => {
   res.json(produtos);
 });
 
-// Endpoint para criar um novo produto com upload de imagem
+/**
+ * @swagger
+ * /produtos:
+ *   post:
+ *     summary: Cria um novo produto com upload de imagem
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               nome:
+ *                 type: string
+ *               preco:
+ *                 type: number
+ *               quantidade:
+ *                 type: integer
+ *               imagem:
+ *                 type: string
+ *                 format: binary
+ *     responses:
+ *       201:
+ *         description: Produto criado com sucesso
+ */
 app.post('/produtos', upload.single('imagem'), (req, res) => {
   const { nome, preco, quantidade } = req.body;
   const imagem = req.file ? `/uploads/${req.file.filename}` : null;
@@ -69,14 +101,61 @@ app.post('/produtos', upload.single('imagem'), (req, res) => {
   res.status(201).json(produto);
 });
 
-// Endpoint para obter um produto pelo ID
+/**
+ * @swagger
+ * /produtos/{id}:
+ *   get:
+ *     summary: Obtém um produto pelo ID
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: Produto encontrado
+ *       404:
+ *         description: Produto não encontrado
+ */
 app.get('/produtos/:id', (req, res) => {
   const produto = produtos.find(p => p.id === parseInt(req.params.id));
   if (!produto) return res.status(404).send('Produto não encontrado');
   res.json(produto);
 });
 
-// Endpoint para atualizar um produto pelo ID
+/**
+ * @swagger
+ * /produtos/{id}:
+ *   put:
+ *     summary: Atualiza um produto pelo ID
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               nome:
+ *                 type: string
+ *               preco:
+ *                 type: number
+ *               imagem:
+ *                 type: string
+ *               quantidade:
+ *                 type: integer
+ *     responses:
+ *       200:
+ *         description: Produto atualizado com sucesso
+ *       404:
+ *         description: Produto não encontrado
+ */
 app.put('/produtos/:id', (req, res) => {
   const produto = produtos.find(p => p.id === parseInt(req.params.id));
   if (!produto) return res.status(404).send('Produto não encontrado');
@@ -90,7 +169,23 @@ app.put('/produtos/:id', (req, res) => {
   res.json(produto);
 });
 
-// Endpoint para excluir um produto pelo ID
+/**
+ * @swagger
+ * /produtos/{id}:
+ *   delete:
+ *     summary: Exclui um produto pelo ID
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       204:
+ *         description: Produto excluído com sucesso
+ *       404:
+ *         description: Produto não encontrado
+ */
 app.delete('/produtos/:id', (req, res) => {
   const produtoIndex = produtos.findIndex(p => p.id === parseInt(req.params.id));
   if (produtoIndex === -1) return res.status(404).send('Produto não encontrado');
