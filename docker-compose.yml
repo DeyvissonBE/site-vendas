@@ -1,0 +1,12 @@
+version: '3'
+services:
+  backend:
+    build:
+      context: ./backend  # Define a pasta onde está o Dockerfile
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"  # Mapeia a porta do contêiner para a porta local
+    volumes:
+      - ./backend:/app  # Monta a pasta backend local para /app no contêiner
+    environment:
+      - NODE_ENV=development
